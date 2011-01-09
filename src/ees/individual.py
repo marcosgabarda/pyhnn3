@@ -11,12 +11,14 @@ class Section:
     def __init__(self, label, individual, size, linf=None, lsup=None):
         self.individual = individual
         self.genes = []
+        self.sigma = []
         self.lsup = lsup
         self.linf = linf
         self.size = size
         self.label = label
         self.tau = 1.0 / math.sqrt(2.0 * math.sqrt(size))
         self.tau_prim = 1.0 / math.sqrt(2.0 * size);
+        self.mutation_factor = None
 
     def get_gen(self, index):
         if index < 0 or index >= len(self.genes):
@@ -41,14 +43,18 @@ class SectionReal(Section):
         if size > curr_size:
             for i in range(size-curr_size):
                 self.genes.append(self.__random_gen())
+                self.sigma.append(uniform.rvs())
         elif size < curr_size:
             self.genes = self.genes[:size]
+            self.sigma = self.sigma[:size]
 
     def random_initialization(self):
         self.genes = []
         for i in range(self.size):
             self.genes.append(self.__random_gen())
-        self.sigma = uniform.rvs()
+        self.sigma = []
+        for i in range(self.size):
+            self.sigma.append(uniform.rvs())
 
     def mutate(self):
         pass
@@ -68,14 +74,18 @@ class SectionInteger(Section):
         if size > curr_size:
             for i in range(size-curr_size):
                 self.genes.append(self.__random_gen())
+                self.sigma.append(uniform.rvs())
         elif size < curr_size:
             self.genes = self.genes[:size]
+            self.sigma = self.sigma[:size]
 
     def random_initialization(self):
         self.genes = []
         for i in range(self.size):
             self.genes.append(self.__random_gen())
-        self.sigma = uniform.rvs()
+        self.sigma = []
+        for i in range(self.size):
+            self.sigma.append(uniform.rvs())
             
     def mutate(self):
         pass

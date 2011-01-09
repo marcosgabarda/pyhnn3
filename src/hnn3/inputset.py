@@ -13,6 +13,7 @@ class InputSet:
     __data = []
     sup = None
     outputs = None
+    mode = "cls"
         
     def load(self, file):
         # @type file: str
@@ -24,18 +25,19 @@ class InputSet:
         f.close()
 
         # Read header from file
-        n_attrs = int(lines[0])
-        missing_code = lines[1].split()[0]
+        self.mode = lines[0].split()[0]
+        n_attrs = int(lines[1])
+        missing_code = lines[2].split()[0]
         self.outputs = 0
         header = []
-        for i in range(2, n_attrs + 2):
+        for i in range(3, n_attrs + 3):
             line = lines[i]
             header.append(line.split()[0])
             if line.split()[0] == "class":
                 self.outputs += 1
 
         # Read data from file
-        for i in range(n_attrs + 2, len(lines)):
+        for i in range(n_attrs + 3, len(lines)):
             raw_attributes = lines[i].split(',')
             target = []
             attributes = []

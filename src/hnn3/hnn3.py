@@ -12,11 +12,10 @@ __author__="Marcos Gabarda"
 __date__ ="$04-dic-2010 18:59:24$"
 
 class HNN3:
-    def __init__(self, data_set, centers, gammas, q, l, mode):
+    def __init__(self, data_set, centers, gammas, q, l):
         # @type centers: list
         # @type gammas: list
         # @type outputs: int
-        # @type mode: HNN3Mode
 
         # TODO Check len(centers) == len(gammas)
 
@@ -29,7 +28,7 @@ class HNN3:
             center = data_set.get(v)
             self.__hn.append(HiddenNeuron(center, gammas[i], q))
         for i in range(data_set.outputs):
-            self.__on.append(OutputNeuron(mode))
+            self.__on.append(OutputNeuron(data_set.mode))
 
     def __train_weights(self, training_data):
         # @type training_data: InputSubSet
@@ -179,7 +178,7 @@ if __name__ == "__main__":
     gammas = [1.8580964989204645, 0.81391955852591669, -0.24823838534650799, 3.0, -0.24378115373921905, 2.1286616124937634, 0.28152696564364277, 2.1082972614071105, 1.1703705206145747, -0.36832876436596385, 0.98967536389628497, 3.0, 1.1317047910051923, 2.1485912054344478, 3.0, 2.3847235516250742, 0.2385628473575685, 2.6574956301068591, 1.0399623376086513, 1.7649214394152648, 1.5778655566274744, 0.49197362240130915, 0.26621284129518508, 1.83421710473945, 2.3366585050945536, 1.0726035778866856, 1.6477021209867737, -0.35328440679216666, 0.353733807700785, 2.3565397385423408, 1.6376264880520235, 1.3114473775008308, 2.6717934279083844, 3.0, 1.6673724452339223, 2.809156367812609, 1.9749194992476204, -1.4472070044817873, 3.0, 2.0203361244151852, 2.2263754416360828, 0.82824197019612744, 2.8623695385921355, 6.5526181292963059e-05, 1.3965166808770753, 1.6643061809840805, 2.2093056734904599, 0.47987829393648224, 2.6373008476849424, 1.4238826567127898, 1.2397140048706881]
     q = -0.096545285695130545
     l = 1.9127189444943609
-    hnn3 = HNN3(data_set, centers, gammas, q, l, "cls")
+    hnn3 = HNN3(data_set, centers, gammas, q, l)
     print str(hnn3.get_accuracy()*100) + "%"
 
     exit(0)
@@ -194,6 +193,6 @@ if __name__ == "__main__":
             gammas.append(random.uniform(0, 3))
         q = random.uniform(0, 3)
         l = random.uniform(0, 1)
-        hnn3 = HNN3(data_set, centers, gammas, q, l, "cls")
+        hnn3 = HNN3(data_set, centers, gammas, q, l)
         print str(hnn3.get_accuracy()*100) + "%"
         

@@ -1,11 +1,11 @@
-import copy
+from scipy.stats.distributions import norm
 
 __author__="Marcos Gabarda"
 __date__ ="$07-dic-2010 18:47:47$"
 
 class EESEnvironment:
     def __init__(self, data_set, individual, initial_population=10, \
-    generations=100, problem="max", selection="ml"):
+    generations=100):
         self.__population = []
         self.__parents = []
         self.__offspring = []
@@ -14,8 +14,11 @@ class EESEnvironment:
         self.__initial_population = initial_population
         self.__id_count = 0
         self.__generations = generations
-        self.__problem = problem
-        self.__selection_mode = selection
+        if self.__data_set.mode == "cls":
+            self.__problem = "max"
+        else:
+            self.__problem = "min"
+        self.__selection_mode = "ml"
 
     def __initialize(self):
         for i in range(self.__initial_population):
@@ -34,9 +37,14 @@ class EESEnvironment:
 
     def __mutation(self, factor=7):
         self.__offspring = []
+        offspring_star = norm.rvs(loc=factor*len(self.__parents))
+        total_fitness = 0.0
+        for i in range(len(self.__parents)):
+            total_fitness += self.__parents[i].score
         for i in range(len(self.__parents)):
             p = self.__parents[i]
-            for j in range(factor):
+            offspring_factor = offspring_star * (p.score / total_fitness)
+            for j in range(int(offspring_factor)):
                 self.__id_count += 1
                 o = p.mutate()
                 o.id = self.__id_count
@@ -90,7 +98,9 @@ class EESEnvironment:
             current_generation += 1
             print "Generation " + str(current_generation)
             self.__evolutionary_cycle()
-            print "Best: " + str(self.get_best())
+            best = self.get_best()
+            print "Best: " + str(best)
+            print "(Parent ID: " +  str(best.parent.id) + ")"
             
 
 if __name__ == "__main__":

@@ -19,10 +19,10 @@ class SectionQ(SectionReal):
 
     def mutate(self):
         #Mutate sigma
-        self.sigma = self.sigma * math.exp(self.tau_prim * norm.rvs() + \
+        self.sigma[0] = self.sigma[0] * math.exp(self.tau_prim * norm.rvs() + \
         self.tau * norm.rvs());
         #Mutate q
-        new_q = self.genes[0] + norm.rvs(scale=self.sigma)
+        new_q = self.genes[0] + norm.rvs(scale=self.sigma[0])
         if not self.lsup and not self.linf:
             self.genes[0] = new_q
         elif not self.lsup:
@@ -47,10 +47,10 @@ class SectionLambda(SectionReal):
 
     def mutate(self):
         #Mutate sigma
-        self.sigma = self.sigma * math.exp(self.tau_prim * norm.rvs() + \
+        self.sigma[0] = self.sigma[0] * math.exp(self.tau_prim * norm.rvs() + \
         self.tau * norm.rvs());
         #Mutate l
-        new_l = self.genes[0] + norm.rvs(scale=self.sigma)
+        new_l = self.genes[0] + norm.rvs(scale=self.sigma[0])
         if not self.lsup and not self.linf:
             self.genes[0] = new_l
         elif not self.lsup:
@@ -77,18 +77,18 @@ class SectionH(SectionInteger):
         self.genes = []
         for i in range(self.size):
             self.genes.append(randint.rvs(1, 100))
-        self.sigma = uniform.rvs()
+        self.sigma = [uniform.rvs()]
 
     def mutate(self):
         #Mutate sigma
-        self.sigma = self.sigma * math.exp(self.tau_prim * norm.rvs() + \
+        self.sigma[0] = self.sigma[0] * math.exp(self.tau_prim * norm.rvs() + \
         self.tau * norm.rvs());
         #Mutate h
-        alpha = norm.rvs(scale=self.sigma)
+        alpha = norm.rvs(scale=self.sigma[0])
         inc = 0
-        if alpha < -self.sigma:
+        if alpha < -self.sigma[0]:
             inc = -1
-        elif alpha > self.sigma:
+        elif alpha > self.sigma[0]:
             inc = 1
         new_h = self.genes[0] + inc
         if new_h >= self.linf and new_h <= self.lsup:
@@ -104,7 +104,9 @@ class SectionCenter(SectionInteger):
 
     def random_initialization(self):
         self.genes = random.sample(range(self.lsup), self.size)
-        self.sigma = uniform.rvs()
+        self.sigma = []
+        for i in range(self.size):
+            self.sigma.append(uniform.rvs())
 
     def resize(self, size):
         curr_size = len(self.genes)
@@ -120,21 +122,26 @@ class SectionCenter(SectionInteger):
         q = sq.genes[0]
         data_set = self.individual.data_set
         pm = 1.0 / float(len(self.genes))
+        mut = 0.0
         for i in range(len(self.genes)):
             x = uniform.rvs()
             if x < pm:
-                self.genes[i] = data_set.get_nearest(self.get_gen(i), q, exclusion=self.genes)
+                mut += 1.0
+                self.genes[i] = data_set.get_nearest(self.get_gen(i), q, \
+                exclusion=self.genes)
+        self.mutation_factor = mut/float(len(self.genes))
 
 
 class SectionGamma(SectionReal):
-
     def mutate(self):
         #Mutate sigma
-        self.sigma = self.sigma * math.exp(self.tau_prim * norm.rvs() + \
-        self.tau * norm.rvs());
+        random_number = norm.rvs()
+        for i in range(len(self.sigma)):
+            self.sigma[i] = self.sigma[i] * math.exp(self.tau_prim * \
+            random_number + self.tau * norm.rvs());
         #Mutate gammas
         for i in range(len(self.genes)):
-            new_gamma = self.genes[i] + norm.rvs(scale=self.sigma)
+            new_gamma = self.genes[i] + norm.rvs(scale=self.sigma[i])
             if not self.lsup and not self.linf:
                 self.genes[i] = new_gamma
             elif not self.lsup:
@@ -172,14 +179,20 @@ class IndividualHNN3(Individual):
         self.id = id
         self.score = None
         self.data_set = data_set
+        self.parent = None
 
     def mutate(self):
         ind = IndividualHNN3(self.data_set)
         ind.genoma[0].genes = copy.deepcopy(self.genoma[0].genes)
+        ind.genoma[0].sigma = copy.deepcopy(self.genoma[0].sigma)
         ind.genoma[1].genes = copy.deepcopy(self.genoma[1].genes)
+        ind.genoma[1].sigma = copy.deepcopy(self.genoma[1].sigma)
         ind.genoma[2].genes = copy.deepcopy(self.genoma[2].genes)
+        ind.genoma[2].sigma = copy.deepcopy(self.genoma[2].sigma)
         ind.genoma[3].genes = copy.deepcopy(self.genoma[3].genes)
+        ind.genoma[3].sigma = copy.deepcopy(self.genoma[3].sigma)
         ind.genoma[4].genes = copy.deepcopy(self.genoma[4].genes)
+        ind.genoma[4].sigma = copy.deepcopy(self.genoma[4].sigma)
         ind.genoma[0].mutate()
         ind.genoma[1].mutate()
         ind.genoma[2].mutate()
@@ -191,6 +204,7 @@ class IndividualHNN3(Individual):
         if self.id:
             ind.id = self.id
         ind.score = None
+        ind.parent = self
         return ind
 
     def __fitness_function_classification(self):
@@ -198,19 +212,19 @@ class IndividualHNN3(Individual):
         l = self.genoma[1].genes[0]
         centers = self.genoma[3].genes
         gammas = self.genoma[4].genes
-        hnn3 = HNN3(self.data_set, centers, gammas, q, l, "cls")
-        return hnn3.get_accuracy(15)
+        hnn3 = HNN3(self.data_set, centers, gammas, q, l)
+        return hnn3.get_training_accuracy()
 
     def __fitness_function_regression(self):
         q = self.genoma[0].genes[0]
         l = self.genoma[1].genes[0]
         centers = self.genoma[3].genes
         gammas = self.genoma[4].genes
-        hnn3 = HNN3(self.data_set, centers, gammas, q, l, "rgs")
+        hnn3 = HNN3(self.data_set, centers, gammas, q, l)
         return hnn3.get_mse(15)
 
-    def update_score(self, mode="cls"):
-        if mode == "cls":
+    def update_score(self):
+        if self.data_set.mode == "cls":
             self.score = self.__fitness_function_classification()
         else:
             self.score = self.__fitness_function_regression()
