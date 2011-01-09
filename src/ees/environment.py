@@ -43,7 +43,9 @@ class EESEnvironment:
             total_fitness += self.__parents[i].score
         for i in range(len(self.__parents)):
             p = self.__parents[i]
-            offspring_factor = offspring_star * (p.score / total_fitness)
+            offspring_factor = 7
+            if total_fitness != 0.0:
+                offspring_factor = offspring_star * (p.score / total_fitness)
             for j in range(int(offspring_factor)):
                 self.__id_count += 1
                 o = p.mutate()
@@ -94,13 +96,22 @@ class EESEnvironment:
         print "--- Initial population ---"
         self.__initialize()
         current_generation = 0
+        best_individual = None
         while current_generation < self.__generations:
             current_generation += 1
             print "Generation " + str(current_generation)
             self.__evolutionary_cycle()
             best = self.get_best()
+            if best_individual is None:
+                best_individual = best
+            else:
+                if self.__problem == "max" and best.score > best_individual.score:
+                    best_individual = best
+                elif self.__problem == "min" and best.score < best_individual.score:
+                    best_individual = best
             print "Best: " + str(best)
             print "(Parent ID: " +  str(best.parent.id) + ")"
+        return best_individual
             
 
 if __name__ == "__main__":
