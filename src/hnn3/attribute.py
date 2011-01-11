@@ -11,6 +11,7 @@ class Attribute:
     data_set = None
     missing = False
     value = None
+    index = None
     
     def s_r(self, z, alpha, beta):
         return numpy.power((1 - numpy.power(z, beta)), alpha)
@@ -48,12 +49,30 @@ class RealAttribute(Attribute):
 class OrdinalAttribute(Attribute):
     headers = []
     def similarity(self, attr):
-        # TODO
-        pass
+        if attr.missing or self.missing:
+            return 0.0
+        index_i = self.headers.index(attr.value)
+        index_j = self.headers.index(self.value)
+        if index_j < index_i:
+            tmp = index_i
+            index_i = index_j
+            index_j = tmp
+        l = self.headers[index_i:index_j+1]
+        num = 0.0
+        for i in range(len(l)):
+            num += self.data_set.get_attribute_probability(self.index, l[i])
+        num = 2 * numpy.log(num)
+        if num == 0.0:
+            return 0.0
+        den = numpy.log(self.data_set.get_attribute_probability(self.index, self.value)) \
+            + numpy.log(self.data_set.get_attribute_probability(self.index, attr.value))
+        return num/den
     
 class NominalAttribute(Attribute):
     headers = []
     def similarity(self, attr):
+        if attr.missing or self.missing:
+            return 0.0
         if attr.value == self.value:
             return 1.0
         return 0.0
@@ -61,8 +80,15 @@ class NominalAttribute(Attribute):
 class BinaryAttribute(Attribute):
     headers = [0, 1]
     def similarity(self, attr):
-        # TODO
-        pass
+        if attr.missing or self.missing:
+            return 0.0
+        if attr.value == self.value:
+            p = self.data_set.get_attribute_probability(self.index, self.value)
+            return (2 * numpy.log(p+p))/(numpy.log(p)+numpy.log(p))
+        else:
+            p0 = self.data_set.get_attribute_probability(self.index, 0)
+            p1 = self.data_set.get_attribute_probability(self.index, 1)
+            return (2 * numpy.log(p0+p1))/(numpy.log(p0)+numpy.log(p1))
     
 class FuzzyAttribute(Attribute):
     def similarity(self, attr):
@@ -70,14 +96,5 @@ class FuzzyAttribute(Attribute):
         pass
     
 if __name__ == "__main__":
-    x = IntegerAttribute()
-    x.value = 10
-    y = IntegerAttribute()
-    y.value = 10
-    print y.similarity(x)
-    x = RealAttribute()
-    x.value = 10.1
-    y = RealAttribute()
-    y.value = 10.1
-    print y.similarity(x)
+    pass
 

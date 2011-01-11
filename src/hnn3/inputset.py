@@ -2,8 +2,10 @@ import copy
 import random
 
 from attribute import IntegerAttribute
-from attribute import NominalAttribute
 from attribute import RealAttribute
+from attribute import NominalAttribute
+from attribute import OrdinalAttribute
+from attribute import BinaryAttribute
 from input import Input
 
 __author__="Marcos Gabarda"
@@ -30,10 +32,16 @@ class InputSet:
         missing_code = lines[2].split()[0]
         self.outputs = 0
         header = []
+        header_extra = []
         for i in range(3, n_attrs + 3):
             line = lines[i]
-            header.append(line.split()[0])
-            if line.split()[0] == "class":
+            line_list = line.split()
+            header.append(line_list[0])
+            if line_list[0] == "set" or line_list[0] == "ord":
+                header_extra.append(line_list[1:])
+            else:
+                header_extra.append([])
+            if line_list[0] == "class":
                 self.outputs += 1
 
         # Read data from file
@@ -41,11 +49,20 @@ class InputSet:
             raw_attributes = lines[i].split(',')
             target = []
             attributes = []
+            fix_class_index = 0
             for i, v in enumerate(raw_attributes):
                 if header[i] == "class":
+                    """
+                    Class attribute.
+                    """
+                    fix_class_index += 1
                     target.append(v.strip())
                 elif header[i] == "int":
+                    """
+                    Integer attribute creation.
+                    """
                     attr = IntegerAttribute()
+                    attr.index = i-fix_class_index
                     if str(v) == str(missing_code):
                         attr.missing = True
                     else:
@@ -53,7 +70,11 @@ class InputSet:
                     attr.data_set = self
                     attributes.append(attr)
                 elif header[i] == "real":
+                    """
+                    Real attribute creation.
+                    """
                     attr = RealAttribute()
+                    attr.index = i-fix_class_index
                     if v == missing_code:
                         attr.missing = True
                     else:
@@ -64,20 +85,44 @@ class InputSet:
                     attr.data_set = self
                     attributes.append(attr)
                 elif header[i] == "set":
+                    """
+                    Nominal attribute creation.
+                    """
                     attr = NominalAttribute()
+                    attr.index = i-fix_class_index
+                    attr.headers = header_extra[i]
                     if v == missing_code:
                         attr.missing = True
                     else:
-                        attr.value = v.strip()
+                        attr.value = v.strip().split(".")[0]
                     attr.data_set = self
                     attributes.append(attr)
                 elif header[i] == "ord":
-                    # TODO Implement
-                    pass
-                elif header[i] == "fuzzy":
-                    # TODO Implement
-                    pass
+                    """
+                    Ordinal attribute creation.
+                    """
+                    attr = OrdinalAttribute()
+                    attr.index = i-fix_class_index
+                    attr.headers = header_extra[i]
+                    if v == missing_code:
+                        attr.missing = True
+                    else:
+                        attr.value = v.strip().split(".")[0]
+                    attr.data_set = self
+                    attributes.append(attr)
                 elif header[i] == "bin":
+                    """
+                    Binary attribute creation.
+                    """
+                    attr = BinaryAttribute()
+                    attr.index = i-fix_class_index
+                    if v == missing_code:
+                        attr.missing = True
+                    else:
+                        attr.value = int(v.strip().split(".")[0])
+                    attr.data_set = self
+                    attributes.append(attr)
+                elif header[i] == "fuzzy":
                     # TODO Implement
                     pass
                 else:
@@ -89,6 +134,17 @@ class InputSet:
 
     def size(self):
         return len(self.__data)
+
+    def get_attribute_probability(self, index, value):
+        # Get probability
+        attr_list = []
+        attr_count = 0.0
+        for i,v in enumerate(self.__data):
+            attr_list.append(v.attributes[index])
+            if v.attributes[index].value == value:
+                attr_count += 1.0
+        return float(attr_count/float(len(attr_list)))
+
 
     def get(self, index):
         if index < 0 or index >= self.size():

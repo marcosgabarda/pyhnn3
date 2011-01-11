@@ -4,6 +4,11 @@ __author__="Marcos Gabarda"
 __date__ ="$07-dic-2010 18:47:47$"
 
 class EESEnvironment:
+    """Extended Evolutionary Strategy
+
+    Environment to run extended evolutionary strategies.
+
+    """
     def __init__(self, data_set, individual, initial_population=10, \
     generations=100):
         self.__population = []
@@ -21,6 +26,9 @@ class EESEnvironment:
         self.__selection_mode = "ml"
 
     def __initialize(self):
+        """
+        Initialize the initial population.
+        """
         for i in range(self.__initial_population):
             ind = object.__new__(self.__individual)
             ind.__init__( self.__data_set , i)
@@ -30,12 +38,20 @@ class EESEnvironment:
         self.__id_count = self.__initial_population
 
     def __selection(self):
-        # Select all the population to be parents
+        """
+        Selection Phase.
+
+        Select all the population to be parents
+
+        """
         self.__parents = []
         for i in range(len(self.__population)):
             self.__parents.append(self.__population[i])
 
     def __mutation(self, factor=7):
+        """
+        Mutation Phase.
+        """
         self.__offspring = []
         offspring_star = norm.rvs(loc=factor*len(self.__parents))
         total_fitness = 0.0
