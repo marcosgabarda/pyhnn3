@@ -57,5 +57,5 @@ class
 How to use
 ----------
 
-    $ python pyhnn3 -n {initial population} {dataset}
+    $ python pyhnn3.py -n {initial population} {dataset}
 
