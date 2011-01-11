@@ -4,7 +4,7 @@ pyhnn3 - Heterogeneous Neuronal Networks 3
 Dependencies
 ------------
 
- * MLPY (https://mlpy.fbk.eu/) >= 2.2.0
+ * MLPY ([https://mlpy.fbk.eu/]) >= 2.2.0
  * SciPy (http://www.scipy.org/) >= 0.7.2
  * NumPy >= 1.3.0
 
