@@ -4,6 +4,13 @@ __author__="Marcos Gabarda"
 __date__ ="$06-dic-2010 17:09:13$"
 
 class Input:
+    """
+
+    Class for representation of inputs.
+
+    @type attributes: Attribute
+    @type target: list
+    """
     attributes = []
     target = []
 

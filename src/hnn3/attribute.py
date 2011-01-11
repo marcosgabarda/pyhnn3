@@ -6,7 +6,10 @@ __date__ ="$06-dic-2010 17:09:21$"
 
 class Attribute:
     """
+
     Abstract attribute from the input set.
+
+    @type data_set: InputSet
     """
     data_set = None
     missing = False
@@ -20,6 +23,7 @@ class Attribute:
         return 1 / (1 + z)
 
     def similarity(self, attr):
+        # @type attr: Attribute
         pass
     
     def __str__(self):
@@ -29,12 +33,16 @@ class Attribute:
 
 class IntegerAttribute(Attribute):
     def similarity(self, attr):
+        # @type attr: Attribute
         if attr.missing or self.missing:
             return 0.0
         return self.s_n(math.fabs( attr.value - self.value))
 
 class RealAttribute(Attribute):
     def similarity(self, attr):
+        """
+        @type attr: Attribute
+        """
         if attr.missing or self.missing:
             return 0.0
         num = math.fabs( attr.value - self.value)
@@ -49,6 +57,7 @@ class RealAttribute(Attribute):
 class OrdinalAttribute(Attribute):
     headers = []
     def similarity(self, attr):
+        # @type Attribute
         if attr.missing or self.missing:
             return 0.0
         index_i = self.headers.index(attr.value)
@@ -71,6 +80,7 @@ class OrdinalAttribute(Attribute):
 class NominalAttribute(Attribute):
     headers = []
     def similarity(self, attr):
+        # @type Attribute
         if attr.missing or self.missing:
             return 0.0
         if attr.value == self.value:
@@ -80,6 +90,7 @@ class NominalAttribute(Attribute):
 class BinaryAttribute(Attribute):
     headers = [0, 1]
     def similarity(self, attr):
+        # @type Attribute
         if attr.missing or self.missing:
             return 0.0
         if attr.value == self.value:
@@ -92,6 +103,7 @@ class BinaryAttribute(Attribute):
     
 class FuzzyAttribute(Attribute):
     def similarity(self, attr):
+        # @type Attribute
         # TODO
         pass
     

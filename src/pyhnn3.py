@@ -7,7 +7,8 @@ __author__="Marcos Gabarda"
 __date__ ="$04-dic-2010 17:34:16$"
 
 if __name__ == "__main__":
-
+    # @type data_set: InputSet
+    # @type ess: EESEnvironment
     parser = argparse.ArgumentParser()
     parser.add_argument('dataset', help='problem data set')
     parser.add_argument('-n', type=int, help='initial population', required=True)

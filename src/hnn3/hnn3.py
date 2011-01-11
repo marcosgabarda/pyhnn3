@@ -12,11 +12,24 @@ __author__="Marcos Gabarda"
 __date__ ="$04-dic-2010 18:59:24$"
 
 class HNN3:
+    """
+    Heterogeneous Neuronal Network 3
+    @type __data_set: InputSet
+    @type __hn: list(HiddenNeuron)
+    @type __on: list(OutputNeuron)
+    """
+    __data_set = None
+    __lambda = None
+    __hn = None
+    __on = None
     def __init__(self, data_set, centers, gammas, q, l):
-        # @type centers: list
-        # @type gammas: list
-        # @type outputs: int
-
+        """
+        @type data_set: InputSet
+        @type centers: list
+        @type gammas: list
+        @type q: float
+        @type l: float
+        """
         # TODO Check len(centers) == len(gammas)
 
         self.__data_set = data_set

@@ -4,8 +4,11 @@ __author__="Marcos Gabarda"
 __date__ ="$06-dic-2010 16:19:37$"
 
 class HiddenNeuron:
+    """
+    Hidden Neuron
+    """
     def __init__(self, center, gamma, q):
-        # @type center: Input
+        # @type self.center: Input
         # @type gamma: float
         # @type q: float
         self.center = center

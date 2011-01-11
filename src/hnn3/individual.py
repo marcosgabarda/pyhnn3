@@ -16,7 +16,9 @@ __author__="Marcos Gabarda"
 __date__ ="$29-dic-2010 12:43:12$"
 
 class SectionQ(SectionReal):
-
+    """
+    Section Q, real value for the q-mean computed in hidden neurons.
+    """
     def mutate(self):
         #Mutate sigma
         self.sigma[0] = self.sigma[0] * math.exp(self.tau_prim * norm.rvs() + \
@@ -44,7 +46,9 @@ class SectionQ(SectionReal):
                 self.genes[0] = self.linf
 
 class SectionLambda(SectionReal):
-
+    """
+    Section Lambda, parameter for ridge regression.
+    """
     def mutate(self):
         #Mutate sigma
         self.sigma[0] = self.sigma[0] * math.exp(self.tau_prim * norm.rvs() + \
@@ -163,7 +167,9 @@ class SectionGamma(SectionReal):
                     self.genes[i] = self.linf
 
 class IndividualHNN3(Individual):
-
+    """
+    @type data_set: InputSet
+    """
     def __init__(self, data_set, id=None):
         sq = SectionQ("q", self, 1)
         sq.random_initialization()
