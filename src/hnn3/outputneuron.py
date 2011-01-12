@@ -15,10 +15,10 @@ class OutputNeuron:
         return 1 / (1 + numpy.exp(-value))
 
     def __function_logit(self, value):
-        return numpy.ln(value/(1-value))
+        return numpy.log(value/(1-value))
 
     def __activation_function(self, value):
-        if self.__mode == "reg":
+        if self.__mode == "rgs":
             return value
         return self.__function_sigmoid(value)
 
@@ -39,10 +39,7 @@ class OutputNeuron:
         x = numpy.array(X)
         y = numpy.array(t)
         for i in range(len(y)):
-            if y[i] == 0:
-                y[i] = self.__function_logit(0.1)
-            elif y[i] == 1:
-                y[i] = self.__function_logit(0.9)
+            y[i] = self.__function_logit(y[i])
         rr.learn(x, y)
         beta = rr.beta()
         self.__weights = []
@@ -50,7 +47,7 @@ class OutputNeuron:
             self.__weights.append(beta[i])
 
     def train(self, X, t, l):
-        if self.__mode == "reg":
+        if self.__mode == "rgs":
             self.__ridge_regression(X, t, l)
         else:
             self.__ridge_regression_classification_fix(X, t, l)

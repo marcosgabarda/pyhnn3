@@ -73,6 +73,9 @@ class HNN3:
         return outputs
 
     def get_training_accuracy(self, margin=0.5):
+        """
+        TODO Rename to get_test_accuracy
+        """
         subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
         training = subsets[0]
         test = subsets[1]
@@ -136,6 +139,9 @@ class HNN3:
         return mean_error / len(folds)
 
     def get_training_mse(self):
+        """
+        TODO Rename to get_test_mse
+        """
         subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
         training = subsets[0]
         test = subsets[1]
@@ -150,10 +156,56 @@ class HNN3:
             sum_error += error
         return sum_error / test.size()
 
+    def get_training_nrms(self):
+        """
+        TODO Rename to get_test_nrms
+        """
+        subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
+        training = subsets[0]
+        test = subsets[1]
+        self.__train_weights(training)
+        sum_error = 0.0
+        x_max = None
+        x_min = None
+        for i in range(test.size()):
+            output = self.get_output(test.get(i))
+            target = test.get(i).target
+            error = 0.0
+            for j in range(len(output)):
+                error += numpy.power(float(output[j]) - float(target[j]), 2)
+                if not x_max:
+                    if float(output[j]) > float(target[j]):
+                        x_max = float(output[j])
+                    else:
+                        x_max = float(target[j])
+                else:
+                    if float(output[j]) > float(target[j]):
+                        if float(output[j]) > x_max:
+                            x_max = float(output[j])
+                    else:
+                        if float(target[j]) > x_max:
+                            x_max = float(target[j])
+                if not x_min:
+                    if float(output[j]) < float(target[j]):
+                        x_min = float(output[j])
+                    else:
+                        x_min = float(target[j])
+                else:
+                    if float(output[j]) < float(target[j]):
+                        if float(output[j]) < x_min:
+                            x_min = float(output[j])
+                    else:
+                        if float(target[j]) < x_min:
+                            x_min = float(target[j])
+            sum_error += error
+        mse = sum_error / test.size()
+        rms = numpy.sqrt(mse)
+        return rms/(x_max-x_min)
+
 if __name__ == "__main__":
 
     data_set = InputSet()
-    data_set.load("hepatitis.data")
+    data_set.load("../data/servo.data")
 
     #<<ID: 487; SCORE: 0.20303 [{q:0.937668}{h:17}{c:144,54,41,81,85,52,140,67,48,138,95,110,6,32,5,86,22}{gamma:0.996954,2.48103,0.602891,3,1.42868,0.0979053,3,1.21504,0.922433,0.357251,0.131358,1.23423,0,0,0.299883,0.263622,1.9044}{lambda:0.0446531}]>>
     #centers = [144,54,41,81,85,52,140,68,48,138,95,110,6,32,5,86,22]
@@ -187,25 +239,11 @@ if __name__ == "__main__":
 #    print str(hnn3.get_accuracy()*100) + "%"
 
     #<< ID: None, SCORE: None { q: [-0.096545285695130545] }  { lambda: [1.9127189444943609] }  { h: [51] }  { centers: [27, 109, 61, 50, 56, 8, 53, 116, 141, 14, 64, 139, 71, 57, 5, 4, 86, 40, 140, 104, 130, 138, 9, 124, 107, 25, 21, 153, 144, 29, 1, 60, 136, 114, 145, 22, 45, 59, 129, 15, 49, 58, 96, 127, 142, 108, 47, 24, 16, 34, 147] }  { gammas: [1.8580964989204645, 0.81391955852591669, -0.24823838534650799, 3.0, -0.24378115373921905, 2.1286616124937634, 0.28152696564364277, 2.1082972614071105, 1.1703705206145747, -0.36832876436596385, 0.98967536389628497, 3.0, 1.1317047910051923, 2.1485912054344478, 3.0, 2.3847235516250742, 0.2385628473575685, 2.6574956301068591, 1.0399623376086513, 1.7649214394152648, 1.5778655566274744, 0.49197362240130915, 0.26621284129518508, 1.83421710473945, 2.3366585050945536, 1.0726035778866856, 1.6477021209867737, -0.35328440679216666, 0.353733807700785, 2.3565397385423408, 1.6376264880520235, 1.3114473775008308, 2.6717934279083844, 3.0, 1.6673724452339223, 2.809156367812609, 1.9749194992476204, -1.4472070044817873, 3.0, 2.0203361244151852, 2.2263754416360828, 0.82824197019612744, 2.8623695385921355, 6.5526181292963059e-05, 1.3965166808770753, 1.6643061809840805, 2.2093056734904599, 0.47987829393648224, 2.6373008476849424, 1.4238826567127898, 1.2397140048706881] } >>
-    centers = [27, 109, 61, 50, 56, 8, 53, 116, 141, 14, 64, 139, 71, 57, 5, 4, 86, 40, 140, 104, 130, 138, 9, 124, 107, 25, 21, 153, 144, 29, 1, 60, 136, 114, 145, 22, 45, 59, 129, 15, 49, 58, 96, 127, 142, 108, 47, 24, 16, 34, 147]
-    gammas = [1.8580964989204645, 0.81391955852591669, -0.24823838534650799, 3.0, -0.24378115373921905, 2.1286616124937634, 0.28152696564364277, 2.1082972614071105, 1.1703705206145747, -0.36832876436596385, 0.98967536389628497, 3.0, 1.1317047910051923, 2.1485912054344478, 3.0, 2.3847235516250742, 0.2385628473575685, 2.6574956301068591, 1.0399623376086513, 1.7649214394152648, 1.5778655566274744, 0.49197362240130915, 0.26621284129518508, 1.83421710473945, 2.3366585050945536, 1.0726035778866856, 1.6477021209867737, -0.35328440679216666, 0.353733807700785, 2.3565397385423408, 1.6376264880520235, 1.3114473775008308, 2.6717934279083844, 3.0, 1.6673724452339223, 2.809156367812609, 1.9749194992476204, -1.4472070044817873, 3.0, 2.0203361244151852, 2.2263754416360828, 0.82824197019612744, 2.8623695385921355, 6.5526181292963059e-05, 1.3965166808770753, 1.6643061809840805, 2.2093056734904599, 0.47987829393648224, 2.6373008476849424, 1.4238826567127898, 1.2397140048706881]
+    centers = [27, 109, 61, 50, 56 ]
+    gammas = [1.8580964989204645, 0.81391955852591669, -0.24823838534650799, -0.24378115373921905, 2.1286616124937634]
     q = -0.096545285695130545
     l = 1.9127189444943609
     hnn3 = HNN3(data_set, centers, gammas, q, l)
-    print str(hnn3.get_accuracy()*100) + "%"
+    print str(hnn3.get_training_nrms())
 
     exit(0)
-
-
-    for test in range(10):
-        #h = random.randint(1, data_set.size())
-        h = random.randint(1, 100)
-        centers = random.sample(range(1, data_set.size()),  h)
-        gammas = []
-        for i in range(h):
-            gammas.append(random.uniform(0, 3))
-        q = random.uniform(0, 3)
-        l = random.uniform(0, 1)
-        hnn3 = HNN3(data_set, centers, gammas, q, l)
-        print str(hnn3.get_accuracy()*100) + "%"
-        

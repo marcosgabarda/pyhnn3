@@ -61,7 +61,10 @@ class EESEnvironment:
             p = self.__parents[i]
             offspring_factor = 7
             if total_fitness != 0.0:
-                offspring_factor = offspring_star * (p.score / total_fitness)
+                if self.__problem == "max":
+                    offspring_factor = offspring_star * (p.score / total_fitness)
+                else:
+                    offspring_factor = offspring_star * (1-(p.score / total_fitness))
             for j in range(int(offspring_factor)):
                 self.__id_count += 1
                 o = p.mutate()
