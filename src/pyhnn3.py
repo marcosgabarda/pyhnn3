@@ -18,5 +18,6 @@ if __name__ == "__main__":
 
     data_set = InputSet()
     data_set.load(args.dataset)
-    ees = EESEnvironment(data_set, IndividualHNN3, args.n)
-    ees.run()
+    ees = EESEnvironment(data_set, IndividualHNN3, args.n, 30)
+    res = ees.run()
+    print "CV: " + str(res.get_hnn3().get_accuracy())

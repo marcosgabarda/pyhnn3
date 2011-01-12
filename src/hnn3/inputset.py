@@ -214,10 +214,11 @@ class InputSubSet:
         for i in range(len(self.__indexes)):
             inp = self.get(i)
             t_comp = float(inp.target[index])
-            if t_comp == 1.0:
-                t_comp = 0.9
-            elif t_comp == 0.0:
-                t_comp = 0.1
+            if self.__data_set.mode == "cls":
+                if t_comp == 1.0:
+                    t_comp = 0.9
+                elif t_comp == 0.0:
+                    t_comp = 0.1
             t.append(t_comp)
         return t
     def __str__(self):

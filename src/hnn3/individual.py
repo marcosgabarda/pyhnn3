@@ -229,6 +229,14 @@ class IndividualHNN3(Individual):
         hnn3 = HNN3(self.data_set, centers, gammas, q, l)
         return hnn3.get_mse(15)
 
+    def get_hnn3(self):
+        q = self.genoma[0].genes[0]
+        l = self.genoma[1].genes[0]
+        centers = self.genoma[3].genes
+        gammas = self.genoma[4].genes
+        hnn3 = HNN3(self.data_set, centers, gammas, q, l)
+        return hnn3
+    
     def update_score(self):
         if self.data_set.mode == "cls":
             self.score = self.__fitness_function_classification()
