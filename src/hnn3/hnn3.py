@@ -73,6 +73,9 @@ class HNN3:
         return outputs
 
     def get_training_accuracy(self, margin=0.5):
+        """
+        TODO Rename to get_test_accuracy
+        """
         subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
         training = subsets[0]
         test = subsets[1]
@@ -136,6 +139,9 @@ class HNN3:
         return mean_error / len(folds)
 
     def get_training_mse(self):
+        """
+        TODO Rename to get_test_mse
+        """
         subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
         training = subsets[0]
         test = subsets[1]
@@ -150,10 +156,56 @@ class HNN3:
             sum_error += error
         return sum_error / test.size()
 
+    def get_training_nrms(self):
+        """
+        TODO Rename to get_test_nrms
+        """
+        subsets = self.__data_set.split(int(self.__data_set.size()*0.75))
+        training = subsets[0]
+        test = subsets[1]
+        self.__train_weights(training)
+        sum_error = 0.0
+        x_max = None
+        x_min = None
+        for i in range(test.size()):
+            output = self.get_output(test.get(i))
+            target = test.get(i).target
+            error = 0.0
+            for j in range(len(output)):
+                error += numpy.power(float(output[j]) - float(target[j]), 2)
+                if not x_max:
+                    if float(output[j]) > float(target[j]):
+                        x_max = float(output[j])
+                    else:
+                        x_max = float(target[j])
+                else:
+                    if float(output[j]) > float(target[j]):
+                        if float(output[j]) > x_max:
+                            x_max = float(output[j])
+                    else:
+                        if float(target[j]) > x_max:
+                            x_max = float(target[j])
+                if not x_min:
+                    if float(output[j]) < float(target[j]):
+                        x_min = float(output[j])
+                    else:
+                        x_min = float(target[j])
+                else:
+                    if float(output[j]) < float(target[j]):
+                        if float(output[j]) < x_min:
+                            x_min = float(output[j])
+                    else:
+                        if float(target[j]) < x_min:
+                            x_min = float(target[j])
+            sum_error += error
+        mse = sum_error / test.size()
+        rms = numpy.sqrt(mse)
+        return rms/(x_max-x_min)
+
 if __name__ == "__main__":
 
     data_set = InputSet()
-    data_set.load("../data/housing.data")
+    data_set.load("../data/servo.data")
 
     #<<ID: 487; SCORE: 0.20303 [{q:0.937668}{h:17}{c:144,54,41,81,85,52,140,67,48,138,95,110,6,32,5,86,22}{gamma:0.996954,2.48103,0.602891,3,1.42868,0.0979053,3,1.21504,0.922433,0.357251,0.131358,1.23423,0,0,0.299883,0.263622,1.9044}{lambda:0.0446531}]>>
     #centers = [144,54,41,81,85,52,140,68,48,138,95,110,6,32,5,86,22]
@@ -192,6 +244,6 @@ if __name__ == "__main__":
     q = -0.096545285695130545
     l = 1.9127189444943609
     hnn3 = HNN3(data_set, centers, gammas, q, l)
-    print str(hnn3.get_mse())
+    print str(hnn3.get_training_nrms())
 
     exit(0)
