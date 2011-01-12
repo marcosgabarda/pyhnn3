@@ -89,17 +89,15 @@ class NominalAttribute(Attribute):
     
 class BinaryAttribute(Attribute):
     headers = [0, 1]
+    def __h(self, x, y):
+        return (2*x*y)/(x+y)
     def similarity(self, attr):
         # @type Attribute
         if attr.missing or self.missing:
             return 0.0
-        if attr.value == self.value:
-            p = self.data_set.get_attribute_probability(self.index, self.value)
-            return (2 * numpy.log(p+p))/(numpy.log(p)+numpy.log(p))
-        else:
-            p0 = self.data_set.get_attribute_probability(self.index, 0)
-            p1 = self.data_set.get_attribute_probability(self.index, 1)
-            return (2 * numpy.log(p0+p1))/(numpy.log(p0)+numpy.log(p1))
+        px = self.data_set.get_attribute_probability(self.index, self.value)
+        py = self.data_set.get_attribute_probability(attr.index, attr.value)
+        return self.__h(1-px, 1-py)
     
 class FuzzyAttribute(Attribute):
     def similarity(self, attr):
