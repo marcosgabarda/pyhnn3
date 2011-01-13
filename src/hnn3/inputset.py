@@ -6,13 +6,22 @@ from attribute import RealAttribute
 from attribute import NominalAttribute
 from attribute import OrdinalAttribute
 from attribute import BinaryAttribute
+from Cython.Compiler.Naming import self_cname
 from input import Input
 
 __author__="Marcos Gabarda"
 __date__ ="$06-dic-2010 16:28:24$"
 
 class InputSet:
+    """
+
+    Class to enclose a data set.
+
+    @type __data: list(Input)
+    @type __missing: float
+    """
     __data = []
+    __missing = None
     sup = None
     outputs = None
     mode = "cls"
@@ -25,6 +34,8 @@ class InputSet:
             exit(-1)
         lines = f.readlines()
         f.close()
+
+        self.__missing = 0.0
 
         # Read header from file
         self.mode = lines[0].split()[0]
@@ -64,6 +75,7 @@ class InputSet:
                     attr = IntegerAttribute()
                     attr.index = i-fix_class_index
                     if str(v) == str(missing_code):
+                        self.__missing += 1
                         attr.missing = True
                     else:
                         attr.value = int(v.strip().split(".")[0])
@@ -76,6 +88,7 @@ class InputSet:
                     attr = RealAttribute()
                     attr.index = i-fix_class_index
                     if v == missing_code:
+                        self.__missing += 1
                         attr.missing = True
                     else:
                         v_final = float(v.strip())
@@ -92,6 +105,7 @@ class InputSet:
                     attr.index = i-fix_class_index
                     attr.headers = header_extra[i]
                     if v == missing_code:
+                        self.__missing += 1
                         attr.missing = True
                     else:
                         attr.value = v.strip().split(".")[0]
@@ -105,6 +119,7 @@ class InputSet:
                     attr.index = i-fix_class_index
                     attr.headers = header_extra[i]
                     if v == missing_code:
+                        self.__missing += 1
                         attr.missing = True
                     else:
                         attr.value = v.strip().split(".")[0]
@@ -117,6 +132,7 @@ class InputSet:
                     attr = BinaryAttribute()
                     attr.index = i-fix_class_index
                     if v == missing_code:
+                        self.__missing += 1
                         attr.missing = True
                     else:
                         attr.value = int(v.strip().split(".")[0])
@@ -134,6 +150,9 @@ class InputSet:
 
     def size(self):
         return len(self.__data)
+    
+    def missing(self):
+        return (self.__missing / (float(self.size())*len(self.__data[0].attributes))) * 100
 
     def get_attribute_probability(self, index, value):
         # Get probability
@@ -227,18 +246,5 @@ class InputSubSet:
 
 if __name__ == "__main__":
     data_set = InputSet()
-    data_set.load("hepatitis.data")
-    print data_set.sup
-    print data_set.size()
-    print data_set.get_nearest(2, 0.5)
-    print data_set.get(55)
-    foo = data_set.split(10)
-    print foo[0]
-    print foo[1]
-    print foo[0].size() + foo[1].size()
-    foo2 = data_set.split_folds(6)
-    sum = 0
-    for i in range(len(foo2)):
-        print foo2[i].size()
-        sum += foo2[i].size()
-    print sum
+    data_set.load("../data/splice.data")
+    print data_set.missing()

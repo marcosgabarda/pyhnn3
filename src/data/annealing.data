@@ -1,44 +1,44 @@
 cls
 41
 ?
-set --,GB,GK,GS,TN,ZA,ZF,ZH,ZM,ZS
-set C, H, G
-set -,R,A,U,K,M,S,W,V
+set -- GB GK GS TN ZA ZF ZH ZM ZS
+set C H G
+set - R A U K M S W V
 real
 real
-set -,T
-set -,S,A,X
-set -,1,2,3,4,5
+set - T
+set - S A X
+set - 1 2 3 4 5
 real
-set -,N
-set P,M,-
-set -,D,E,F,G
-set -,1,2,3,4,5
-set Y,-
-set Y,-
-set Y,-
-set B,M,-
-set Y,-
-set Y,-
-set C,-
-set P,-
-set Y,-
-set Y,-
-set Y,-
-set Y,-
-set Y,-
-set B,R,V,C,-
-set Y,-
-set Y,-
-set Y,-
-set Y,-
-set COIL, SHEET
+set - N
+set P M -
+set - D E F G
+set - 1 2 3 4 5
+set Y -
+set Y -
+set Y -
+set B M -
+set Y -
+set Y -
+set C -
+set P -
+set Y -
+set Y -
+set Y -
+set Y -
+set Y -
+set B R V C -
+set Y -
+set Y -
+set Y -
+set Y -
+set COIL SHEET
 real
 real
 real
-set -,Y,N
-set 0000,0500,0600,0760
-set -,1,2,3
+set - Y N
+set 0000 0500 0600 0760
+set - 1 2 3
 class
 class
 class
